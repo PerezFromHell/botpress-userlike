@@ -4,9 +4,17 @@
   https://botpress.io/docs
 */
 
+import Userlike from './userlike'
+
+let userlike = null;
+
 module.exports = {
 
-  config: { },
+  config: {
+    username: { type: 'string', default: '', env: 'USERLIKE_USERNAME' },
+    password: { type: 'string', default: '', env: 'USERLIKE_PASSWORD' },
+    hostname: { type: 'string', default: 'www.userlike.com', env: 'USERLIKE_HOST' }
+   },
 
   init: async function(bp, configurator) {
     // This is called before ready.
@@ -18,7 +26,8 @@ module.exports = {
     // Serve your APIs here, execute logic, etc.
 
     const config = await configurator.loadAll()
-    // Do fancy stuff here :)
-
+    
+     userlike = new Userlike(bp, config);
+     userlike.connect(bp);
   }
 }
