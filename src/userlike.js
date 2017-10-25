@@ -31,5 +31,14 @@ class Userlike {
     }).on('online', online);
     
   }
+  
+  send(jid, text) {
+    let stanza = new (Client.Stanza)('message', {
+      to: jid,
+      type: "chat",
+      level: "chat"
+    }).c('body').t(text);
+    this.client.send(stanza);
+  }
 }
 module.exports = Userlike;

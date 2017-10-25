@@ -6,6 +6,8 @@
 
 import Userlike from './userlike'
 import outgoing from './outgoing'
+import UMM from './umm'
+
 let userlike = null;
 
 const outgoingMiddleware = (event, next) => {
@@ -37,7 +39,9 @@ module.exports = {
      module: 'botpress-userlike',
      description: 'Sends out messages that targets platform = userlike.' +
      ' This middleware should be placed at the end as it swallows events once sent.'
-   })
+   });
+   
+   UMM(bp);
     // This is called before ready.
     // At this point your module is just being initialized, it is not loaded yet.
   },

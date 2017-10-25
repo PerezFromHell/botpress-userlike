@@ -36,7 +36,7 @@ const process = {
            bp.middlewares.sendIncoming({
              type: 'presence',
              platform: 'userlike',
-             text: 'presence',
+             text: 'online',
              raw: stanza,
              user: user
            });
@@ -60,18 +60,18 @@ const process = {
     bp.middlewares.sendIncoming({
       type: 'message',
       platform: 'userlike',
-      text: 'Hi',
+      text: body,
       raw: stanza,
       user: user
     });
-    console.log('⮞ message online ', stanza.toString(), 'from', user.name);
+    console.log('⮞ message online ', stanza.toString(), 'from', user.name, user.jid);
   }
 }
 
 module.exports = (bp, userlike) => {
 
   userlike.client.on('stanza', function(stanza){
-    // console.log('⮈', stanza.toString());
+    console.log('⮈', stanza.toString());
     
     let action = process[stanza.getName()];
     if(!action){
