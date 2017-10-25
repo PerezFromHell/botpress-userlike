@@ -11,6 +11,7 @@ class Userlike {
     this.client = null
     this.config = config
     this.connected = false
+    this.Client = Client;
   }
   
   connect(bp) {
@@ -31,5 +32,4 @@ class Userlike {
     
   }
 }
-
 module.exports = Userlike;

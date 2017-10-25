@@ -5,8 +5,20 @@
 */
 
 import Userlike from './userlike'
-
+import outgoing from './outgoing'
 let userlike = null;
+
+const outgoingMiddleware = (event, next) => {
+  if (event.platform !== 'userlike') {
+    return next()
+  }
+
+  if (!outgoing[event.type]) {
+    return next('Unsupported event type: ' + event.type)
+  }
+
+  outgoing[event.type](event, next, userlike)
+}
 
 module.exports = {
 
@@ -17,6 +29,15 @@ module.exports = {
    },
 
   init: async function(bp, configurator) {
+    bp.middlewares.register({
+     name: 'userlike.sendMessages',
+     type: 'outgoing',
+     order: 100,
+     handler: outgoingMiddleware,
+     module: 'botpress-userlike',
+     description: 'Sends out messages that targets platform = userlike.' +
+     ' This middleware should be placed at the end as it swallows events once sent.'
+   })
     // This is called before ready.
     // At this point your module is just being initialized, it is not loaded yet.
   },
