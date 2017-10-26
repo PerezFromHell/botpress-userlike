@@ -6,7 +6,9 @@ import actions from './actions';
 function processOutgoing({ event, blocName, instruction }) {
   const ins = Object.assign({}, instruction) // Create a shallow copy of the instruction
   const optionsList = []
-
+  
+  console.log('OPTIONS:', instruction.quick_replies)
+  
   const options = _.pick(instruction, optionsList)
  
   for (let prop of optionsList) {

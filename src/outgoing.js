@@ -3,7 +3,7 @@ const handleText = (event, next, userlike) => {
   if (event.platform !== 'userlike' || event.type !== 'text') {
     return next()
   }
-  console.log("handleText", event.text);
+  // console.log("handleText", event.text);
 
   const user = event.raw.user;
   const text = event.text;

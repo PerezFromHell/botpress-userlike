@@ -40,7 +40,7 @@ const process = {
              raw: stanza,
              user: user
            });
-           console.log('⮞ user online ', user);
+          //  console.log('⮞ user online ', user);
         }
     }
     
@@ -64,14 +64,14 @@ const process = {
       raw: stanza,
       user: user
     });
-    console.log('⮞ message online ', stanza.toString(), 'from', user.name, user.jid);
+    // console.log('⮞ message online ', stanza.toString(), 'from', user.name, user.jid);
   }
 }
 
 module.exports = (bp, userlike) => {
 
   userlike.client.on('stanza', function(stanza){
-    console.log('⮈', stanza.toString());
+    // console.log('⮈', stanza.toString());
     
     let action = process[stanza.getName()];
     if(!action){
@@ -106,6 +106,6 @@ module.exports = (bp, userlike) => {
     // };
     
     // All stanza info
-    console.log('⮈', stanza.toString());
+    // console.log('⮈', stanza.toString());
   });
 }
