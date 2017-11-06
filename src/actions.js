@@ -33,10 +33,8 @@ const createText = (user, text, options = {}) => {
     platform: 'userlike',
     type: 'text',
     text: text,
-    raw: {
-      options: options,
-      user: user
-    }
+    user: user,
+    raw: { options }
   })
 }
 

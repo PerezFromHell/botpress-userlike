@@ -1,5 +1,6 @@
 import Client from 'node-xmpp-client'
 import incoming from './incoming'
+import Promise from 'bluebird'
 
 class Userlike {
   constructor(bp, config) {
@@ -32,14 +33,27 @@ class Userlike {
     
   }
   
-  send(jid, text) {
-    let stanza = new (Client.Stanza)('message', {
+  sendText(jid, text, options) {
+    const client = this.client, 
+      message = new (Client.Stanza)('message', {
       to: jid,
       type: "chat",
       level: "chat"
     }).c('body').t(text);
     
-    this.client.send(stanza);
+    return new Promise((r, rj) => {
+      const send = () => {
+        client.send(message);
+        client.send(new (Client.Stanza)('message', { to: jid, type: "chat"}).c('paused'));
+        r();
+      };
+      client.send(new (Client.Stanza)('message', { to: jid, type: "chat"}).c('active'));
+      if(options.typing){
+        client.send(new (Client.Stanza)('message', { to: jid, type: "chat"}).c('composing'));
+      }
+      setTimeout(send, options.typing || 0);
+    });
+    
   }
 }
 module.exports = Userlike;

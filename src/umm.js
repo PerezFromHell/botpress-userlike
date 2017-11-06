@@ -5,9 +5,7 @@ import actions from './actions';
 
 function processOutgoing({ event, blocName, instruction }) {
   const ins = Object.assign({}, instruction) // Create a shallow copy of the instruction
-  const optionsList = []
-  
-  console.log('OPTIONS:', instruction.quick_replies)
+  const optionsList = ['typing'];
   
   const options = _.pick(instruction, optionsList)
  
@@ -16,7 +14,7 @@ function processOutgoing({ event, blocName, instruction }) {
   }
   
   if (!_.isNil(instruction.text)) {
-    return actions.createText(_.get(event, 'user'), instruction.text, instruction.options)
+    return actions.createText(_.get(event, 'user'), instruction.text, options)
   }
   
   const strRep = util.inspect(instruction, false, 1);

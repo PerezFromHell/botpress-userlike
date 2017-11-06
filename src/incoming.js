@@ -62,6 +62,7 @@ const process = {
       user = users[id];
       
     if(!body || !user ) return
+    user.online = true;
     bp.middlewares.sendIncoming({
       type: 'message',
       platform: 'userlike',
