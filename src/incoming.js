@@ -78,7 +78,7 @@ const process = {
 module.exports = (bp, userlike) => {
 
   userlike.client.on('stanza', function(stanza){
-    //console.log('⮈', stanza.toString());
+    console.log('⮈', stanza.toString());
     
     const action = process[stanza.getName()];
     if(!action){
