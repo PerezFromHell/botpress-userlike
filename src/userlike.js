@@ -38,6 +38,7 @@ class Userlike {
       type: "chat",
       level: "chat"
     }).c('body').t(text);
+    
     this.client.send(stanza);
   }
 }

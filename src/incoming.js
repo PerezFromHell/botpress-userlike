@@ -1,50 +1,55 @@
-let users = {
-  
-};
-
 const isFromBot = (bp, userlike, stanza)=>{
-  let from = stanza.attrs.from;
-  let fromBot =  from.indexOf(userlike.config.username) === 0;
-  // console.log('fromBot', fromBot);
-  return fromBot;
+  const from = stanza.attrs.from;
+  if( from == null) {
+    return false;
+  }
+  return from.indexOf(userlike.config.username) === 0; 
 }
 
+let users = {};
+
 const process = {
-  presence: function(bp, userlike,stanza){
+  presence: function(bp, userlike, stanza){
     if(isFromBot(bp, userlike, stanza)) return;
+    const show = stanza.getChildText('show');
+    if(show !== 'chat' ) {
+      return; 
+    }
+    const jid = stanza.attrs.from,
+      id = jid.split('/')[0];
+    users[id] = users[id] || { id, jid };
+    //console.warn('⮞ presence', id,  stanza.toString());
     
-    let jid = stanza.attrs.from,
-      privateJid = jid.split('/')[0],
-      user = users[privateJid] || (users[privateJid] = {
-        jid : jid,
-        privateJid : privateJid
-      });
   },
+  
   iq: function(bp, userlike, stanza) {
-    let type = stanza.type;
+    const type = stanza.type;
     
-    if(stanza.type === 'set') {
-      let query = stanza.getChild('query'),
-        item = query.getChild('item'),
-        group = item.getChildText('group'),
-        privateJid = item.attrs.jid,
-        name = item.attrs.name,
-        user = users[privateJid];
-        
-        if(user && !user.online){
-           users[privateJid] = Object.assign(user, {name,group, online: true });
-           bp.middlewares.sendIncoming({
-             type: 'presence',
-             platform: 'userlike',
-             text: 'online',
-             raw: stanza,
-             user: user
-           });
-          //  console.log('⮞ user online ', user);
-        }
+    if(type !== 'set') {
+      return;
     }
     
+    const query = stanza.getChild('query'),
+      item  = query.getChild('item'),
+      group = item.getChildText('group'),
+      id    = item.attrs.jid,
+      name  = item.attrs.name,
+      user    = users[id];
     
+    if(!user || user.online){
+      return;
+    }
+    
+    Object.assign(user, { online: true, name: name });
+    
+    bp.middlewares.sendIncoming({
+     type: 'online',
+     platform: 'userlike',
+     text: '',
+     raw: stanza,
+     user: user
+    });
+    //console.warn('⮞ online', user.name);
   },
   
   message: function(bp, userlike, stanza) {
@@ -53,10 +58,10 @@ const process = {
     } 
     let body = stanza.getChildText('body'), 
       jid = stanza.attrs.from,
-      privateJid = jid.split('/')[0],
-      user = users[privateJid];
+      id = jid.split('/')[0],
+      user = users[id];
       
-    if(!user||!body) return
+    if(!body || !user ) return
     bp.middlewares.sendIncoming({
       type: 'message',
       platform: 'userlike',
@@ -64,48 +69,22 @@ const process = {
       raw: stanza,
       user: user
     });
-    // console.log('⮞ message online ', stanza.toString(), 'from', user.name, user.jid);
+    
+    //console.debug('⮞ message', text, 'from', user.name, user.jid);
   }
 }
 
 module.exports = (bp, userlike) => {
 
   userlike.client.on('stanza', function(stanza){
-    // console.log('⮈', stanza.toString());
+    //console.log('⮈', stanza.toString());
     
-    let action = process[stanza.getName()];
+    const action = process[stanza.getName()];
     if(!action){
       return 
     }
     
     action(bp, userlike, stanza);
-    
-    
-    // if (stanza.is('presence')){
-    //   console.log('🗸 ' + stanza.getChildText('status'));
-    // }
-
-    // if (stanza.is('message') && stanza.getChildText('body') !== null){
-    //   console.log(' TO   : ' + stanza.attrs.to + '\n' +
-    //               ' FROM : ' + stanza.attrs.from  + '\n' +
-    //               '⮞ stanza text: ' + stanza.getChildText('body'));
-    // }
-    
-    
-    // if (stanza.is('message')){
-
-    //   console.log('⮞ stanza is message');
-
-    //   if (isFromBot(stanza.is('message'))) {
-    //     console.log('⮞ mesaj de la robot');
-    //   }
-
-    //   if (stanza.is('message') && stanza.getChildText('body') !== null){
-    //     console.log('⮞ ' + stanza.getChildText('body'));
-    //   }
-    // };
-    
-    // All stanza info
-    // console.log('⮈', stanza.toString());
+  
   });
 }
